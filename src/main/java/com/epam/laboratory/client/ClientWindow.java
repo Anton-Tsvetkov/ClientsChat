@@ -1,7 +1,9 @@
 package com.epam.laboratory.client;
 
+import com.epam.laboratory.Config;
 import com.epam.laboratory.network.TCPConnection;
 import com.epam.laboratory.network.TCPConnectionListener;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,22 +13,20 @@ import java.io.IOException;
 
 public class ClientWindow extends JFrame implements ActionListener, TCPConnectionListener {
 
-    private static final String IP_ADDRESS = "192.168.1.33";
-    private static final int PORT = 8189;
+    private static final String IP_ADDRESS = Config.getServerIpAddress();
+    private static final int PORT = Config.getServerPortAddress();
     private static final int WIDTH = 600;
     private static final int HEIGHT = 400;
 
+    private final static Logger LOGGER = Logger.getLogger(ClientWindow.class);
+
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new ClientWindow();
-            }
-        });
+        SwingUtilities.invokeLater(ClientWindow::new);
     }
 
     private final JTextArea log = new JTextArea();
-    private final JTextField fieldNIckName = new JTextField("anon");
+    private final JTextField fieldNIckName = new JTextField("Anon");
     private final JTextField fieldInput = new JTextField();
 
     private TCPConnection connection;
@@ -49,20 +49,22 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
         try {
             connection = new TCPConnection(this, IP_ADDRESS, PORT);
         } catch (IOException e) {
-            printMessage("Connection exception: " + e.getMessage());
+            LOGGER.error("Connection exception: " + e.getMessage());
+            printMessage("Connection error.");
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         String message = fieldInput.getText();
-        if(message.equals("")) return;
+        if (message.equals("")) return;
         fieldInput.setText(null);
         connection.sendString(fieldNIckName.getText() + ": " + message);
     }
 
     @Override
     public void onConnectionReady(TCPConnection tcpConnection) {
+        LOGGER.info("Connection ready...");
         printMessage("Connection ready...");
     }
 
@@ -73,21 +75,21 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
 
     @Override
     public void onDisconnect(TCPConnection tcpConnection) {
+        LOGGER.info("Connection close");
         printMessage("Connection close");
     }
 
     @Override
     public void onException(TCPConnection tcpConnection, Exception exception) {
-        printMessage("Connection exception: " + exception.getMessage());
+        LOGGER.error("Connection exception: " + exception.getMessage());
+        printMessage("Connection error.");
     }
 
     private synchronized void printMessage(String message) {
-        SwingUtilities.invokeLater(new Runnable() { // гарантирует выполнение в потоке окна
-            @Override
-            public void run() {
-                log.append(message + "\n");
-                log.setCaretPosition(log.getDocument().getLength());
-            }
+        // гарантирует выполнение в потоке окна
+        SwingUtilities.invokeLater(() -> {
+            log.append(message + "\n");
+            log.setCaretPosition(log.getDocument().getLength());
         });
     }
 

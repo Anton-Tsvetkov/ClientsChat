@@ -1,13 +1,10 @@
 package com.epam.laboratory;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+import com.epam.laboratory.client.ClientWindow;
+
+public class App {
+    public static void main(String[] args) {
+        ClientWindow clientWindow = new ClientWindow();
+
     }
 }

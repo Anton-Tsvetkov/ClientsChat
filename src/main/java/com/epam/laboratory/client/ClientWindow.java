@@ -19,19 +19,15 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
     private static final int HEIGHT = 400;
 
     private final static Logger LOGGER = Logger.getLogger(ClientWindow.class);
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ClientWindow::new);
-    }
+    private final static String DEFAULT_CLIENT_NAME = Config.getDefaultClientName();
 
     private final JTextArea log = new JTextArea();
-    private final JTextField fieldNIckName = new JTextField("Anon");
+    private final JTextField fieldNIckName = new JTextField(DEFAULT_CLIENT_NAME);
     private final JTextField fieldInput = new JTextField();
 
     private TCPConnection connection;
 
-    private ClientWindow() {
+    public ClientWindow() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(WIDTH, HEIGHT);
         setLocationRelativeTo(null);
@@ -52,6 +48,10 @@ public class ClientWindow extends JFrame implements ActionListener, TCPConnectio
             LOGGER.error("Connection exception: " + e.getMessage());
             printMessage("Connection error.");
         }
+    }
+
+    public void startClient(){
+        SwingUtilities.invokeLater(ClientWindow::new);
     }
 
     @Override

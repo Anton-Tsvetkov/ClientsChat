@@ -55,13 +55,11 @@ public class Config {
         return getStringProperty("QUIT");
     }
 
-    public static String getPathToMessageHistoryFile() {
-        return getStringProperty("PATH_TO_MESSAGE_HISTORY");
-    }
-
     public static String getMessagePattern() {
         return getStringProperty("MESSAGE_PATTERN");
     }
+
+    public static String getDefaultClientName() { return getStringProperty("DEFAULT_CLIENT_NAME"); }
 
     public static void writeMessagesToHistoryFile(Queue<String> messages) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH_TO_MESSAGES_HISTORY))) {
